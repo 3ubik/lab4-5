@@ -20,6 +20,7 @@ public class GraphicsDisplay extends JPanel {
 	// Флаговые переменные, задающие правила отображения графика
 	private boolean showAxis = true;
 	private boolean showMarkers = true;
+	private boolean showGraphic = true;
 	// Границы диапазона пространства, подлежащего отображению
 	private double minX;
 	private double maxX;
@@ -31,8 +32,10 @@ public class GraphicsDisplay extends JPanel {
 	private BasicStroke graphicsStroke;
 	private BasicStroke axisStroke;
 	private BasicStroke markerStroke;
+	private BasicStroke graphicsStroke1;
 	// Различные шрифты отображения надписей
 	private Font axisFont;
+	
 	
 	
 	public GraphicsDisplay() {
@@ -40,14 +43,12 @@ public class GraphicsDisplay extends JPanel {
 		setBackground(Color.WHITE);
 		// Сконструировать необходимые объекты, используемые в рисовании
 		// Перо для рисования графика
-		graphicsStroke = new BasicStroke(2.0f, BasicStroke.CAP_BUTT,
-		BasicStroke.JOIN_ROUND, 10.0f, null, 0.0f);
+		graphicsStroke = new BasicStroke(5.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 10.0f,  new float[] {20,10,10,10,10,10,10,10,20,10,10,10,20}, 0.0f);
+		graphicsStroke1 = new BasicStroke(5.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 10.0f,  null, 0.0f);
 		// Перо для рисования осей координат
-		axisStroke = new BasicStroke(2.0f, BasicStroke.CAP_BUTT,
-		BasicStroke.JOIN_MITER, 10.0f, null, 0.0f);
+		axisStroke = new BasicStroke(2.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, null, 0.0f);
 		// Перо для рисования контуров маркеров
-		markerStroke = new BasicStroke(1.0f, BasicStroke.CAP_BUTT,
-		BasicStroke.JOIN_MITER, 10.0f, null, 0.0f);
+		markerStroke = new BasicStroke(3.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1.0f, null, 0.0f);
 		// Шрифт для подписей осей координат
 		axisFont = new Font("Serif", Font.BOLD, 36);
 		}
@@ -71,6 +72,10 @@ public class GraphicsDisplay extends JPanel {
 			this.showMarkers = showMarkers;
 			repaint();
 		}
+	public void  setShowGraphic(boolean showGraphic) {
+		this.showGraphic =  showGraphic;
+		repaint();
+	}
 	
 	protected Point2D.Double xyToPoint(double x, double y) {
 		// Вычисляем смещение X от самой левой точки (minX)
@@ -102,8 +107,7 @@ public class GraphicsDisplay extends JPanel {
 		GeneralPath graphics = new GeneralPath();
 		for (int i=0; i<graphicsData.length; i++) {
 		// Преобразовать значения (x,y) в точку на экране point
-		Point2D.Double point = xyToPoint(graphicsData[i][0],
-		graphicsData[i][1]);
+		Point2D.Double point = xyToPoint(graphicsData[i][0],graphicsData[i][1]);
 		if (i>0) {
 		// Не первая итерация – вести линию в точку point
 		graphics.lineTo(point.getX(), point.getY());
@@ -198,28 +202,94 @@ public class GraphicsDisplay extends JPanel {
 		}
 	
 	protected void paintMarkers(Graphics2D canvas) {
-		// Шаг 1 - Установить специальное перо для черчения контуров маркеров
-		canvas.setStroke(markerStroke);
-		// Выбрать красный цвета для контуров маркеров
-		canvas.setColor(Color.RED);
-		// Выбрать красный цвет для закрашивания маркеров внутри
-		canvas.setPaint(Color.RED);
-		// Шаг 2 - Организовать цикл по всем точкам графика
-		for (Double[] point: graphicsData) {
-		// Инициализировать эллипс как объект для представления маркера
-		Ellipse2D.Double marker = new Ellipse2D.Double();
-		/* Эллипс будет задаваться посредством указания координат его
-		центра и угла прямоугольника, в который он вписан */
-		// Центр - в точке (x,y)
-		Point2D.Double center = xyToPoint(point[0], point[1]);
-		// Угол прямоугольника - отстоит на расстоянии (3,3)
-		Point2D.Double corner = shiftPoint(center, 3, 3);
-		// Задать эллипс по центру и диагонали
-		marker.setFrameFromCenter(center, corner);
-		canvas.draw(marker); // Начертить контур маркера
-		canvas.fill(marker); // Залить внутреннюю область маркера
+		
+				canvas.setStroke(markerStroke);
+				
+				
+				for (Double[] point: graphicsData) {
+				    GeneralPath marker = new GeneralPath(); 
+				    
+				    boolean flag = false;
+				   
+				    Point2D.Double point1 = xyToPoint(point[0], point[1]);
+				    int a=point[0].intValue();
+				    int b=a;
+				    int sum=0;
+				    
+				    while(a != 0){
+				        
+				         sum += (a % 10);
+				         a/=10;
+				 }
+				    System.out.println(sum+" "+b+" "+point[0]);
+				    if(sum<10) {
+				    	flag = true;
+				    }
+				    else {
+				    	flag = false;
+				    }
+				    
+				    
+				    marker.moveTo(point1.getX()-10.0, point1.getY());
+			     	marker.lineTo(point1.getX()+10.0, point1.getY());
+			     	
+			     	marker.moveTo(point1.getX(), point1.getY()-10.0);
+			     	marker.lineTo(point1.getX(), point1.getY()+10.0);
+			     	
+			     	marker.moveTo(point1.getX()-3.0, point1.getY()+3.0);
+			     	marker.lineTo(point1.getX()+3.0, point1.getY()+3.0);			     	 
+				    marker.lineTo(point1.getX()+3.0, point1.getY()-3.0);
+				    marker.lineTo(point1.getX()-3.0, point1.getY()-3.0);
+				    marker.lineTo(point1.getX()-3.0, point1.getY()+3.0);
+				     
+				   
+				    
+			     	
+			     	if(flag==true) {
+			     		canvas.setColor(Color.BLUE);
+			    		canvas.setPaint(Color.BLUE);
+			    		canvas.draw(marker);
+			 		    canvas.fill(marker); 
+			     	}
+			     	else {
+			     		canvas.setColor(Color.BLACK);
+			    		canvas.setPaint(Color.BLACK);
+			     		canvas.draw(marker);
+			 		    canvas.fill(marker); 
+			     	}
+				}
+			}
+	
+	
+	protected void paintGraphic1(Graphics2D canvas) {
+		canvas.setStroke(graphicsStroke1);
+		// Выбрать линию для рисования графика
+			canvas.setStroke(graphicsStroke);
+			// Выбрать цвет линии
+			canvas.setColor(Color.PINK);
+			/* Будем рисовать линию графика как путь, состоящий из множества
+			сегментов (GeneralPath). Начало пути устанавливается в первую точку
+			графика, после чего прямой соединяется со следующими точками */
+				GeneralPath graphics = new GeneralPath();
+			for (int i=0; i<graphicsData.length; i++) {
+				// Преобразовать значения (x,y) в точку на экране point
+				
+				Point2D.Double point = xyToPoint(graphicsData[i][0].intValue(),graphicsData[i][1].intValue());
+			if (i>0) {
+					// Не первая итерация – вести линию в точку point
+					graphics.lineTo(point.getX(), point.getY());
+				} else {
+					// Первая итерация - установить начало пути в точку point
+					graphics.moveTo(point.getX(), point.getY());
+				}
+			System.out.print("доп график"+graphicsData[i][0].intValue()+" "+graphicsData[i][1].intValue());
+			}
+					// Отобразить график
+					canvas.draw(graphics);
 		}
-		}
+		
+	
+		
 	
 	public void paintComponent(Graphics g) {
 		/* Шаг 1 - Вызвать метод предка для заливки области цветом заднего фона
@@ -286,6 +356,7 @@ public class GraphicsDisplay extends JPanel {
 		paintGraphics(canvas);
 		// Затем (если нужно) отображаются маркеры точек графика.
 		if (showMarkers) paintMarkers(canvas);
+		if (showGraphic) paintGraphic1(canvas);
 		// Шаг 9 - Восстановить старые настройки холста
 		canvas.setFont(oldFont);
 		canvas.setPaint(oldPaint);
@@ -293,7 +364,7 @@ public class GraphicsDisplay extends JPanel {
 		canvas.setStroke(oldStroke);
 		}
 
-	
+
 	
 
 

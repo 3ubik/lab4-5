@@ -28,6 +28,7 @@ public class MainFrame extends JFrame {
 	// Пункты меню
 	private JCheckBoxMenuItem showAxisMenuItem;
 	private JCheckBoxMenuItem showMarkersMenuItem;
+	private JCheckBoxMenuItem showGraphicMenuItem;
 	// Компонент-отображатель графика
 	private GraphicsDisplay display = new GraphicsDisplay();
 	// Флаг, указывающий на загруженность данных графика
@@ -96,10 +97,22 @@ public class MainFrame extends JFrame {
 	showMarkersMenuItem = new JCheckBoxMenuItem(showMarkersAction);
 	graphicsMenu.add(showMarkersMenuItem);
 	// Элемент по умолчанию выключен
-	showMarkersMenuItem.setSelected(false);
+	showMarkersMenuItem.setSelected(true);
 	// Зарегистрировать обработчик событий, связанных с меню "График"
 	graphicsMenu.addMenuListener(new GraphicsMenuListener());
 
+	
+	
+	Action showGraphicAction = new AbstractAction("график функции «целая часть f»") {
+		public void actionPerformed(ActionEvent event) {
+			display.setShowGraphic(showGraphicMenuItem.isSelected());
+	    }
+		};
+		showGraphicMenuItem = new JCheckBoxMenuItem(showGraphicAction);
+		graphicsMenu.add(showGraphicMenuItem);
+		showGraphicMenuItem.setSelected(true);
+		
+		
 	// Установить GraphicsDisplay в цент граничной компоновки
 	getContentPane().add(display, BorderLayout.CENTER);
 	
