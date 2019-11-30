@@ -55,11 +55,25 @@ public class GraphicsDisplay extends JPanel {
 	// Метод вызывается из обработчика элемента меню "Открыть файл с графиком"
 	// главного окна приложения в случае успешной загрузки данных
 	public void showGraphics(Double[][] graphicsData) {
-	// Сохранить массив точек во внутреннем поле класса
-	this.graphicsData = graphicsData;
-	// Запросить перерисовку компонента (неявно вызвать paintComponent())
-	repaint();
+		// Сохранить массив точек во внутреннем поле класса
+		this.graphicsData = graphicsData;
+		// Запросить перерисовку компонента (неявно вызвать paintComponent())
+		repaint();
 	}
+	
+	// Методы-модификаторы для изменения параметров отображения графика
+	// Изменение любого параметра приводит к перерисовке области
+	public void setShowAxis(boolean showAxis) {
+		this.showAxis = showAxis;
+		repaint();
+	}
+	public void setShowMarkers(boolean showMarkers) {
+			this.showMarkers = showMarkers;
+			repaint();
+		}
+
+	
+	
 
 
 }
